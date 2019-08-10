@@ -70,11 +70,28 @@ public class FinderManager {
         }
         
         // if the selected is a file, then delete last path component
-        guard isDirectory.boolValue else {
-            return url.deletingLastPathComponent().absoluteString
+        //guard isDirectory.boolValue else {
+        //    return url.deletingLastPathComponent().absoluteString
+        //}
+        //TODO: Make it possible to allow User which behaviour he wants
+        //Folder selected:
+        //1. Open the parent folder (which is now the modified version)
+        //2. Open the selected folder
+        if !isFinderItemSelected() {
+            return url.absoluteString
         }
+        return url.deletingLastPathComponent().absoluteString
+    }
+    
+    //TODO: Refactore this method better, see getFullPathToFrontFinderWindowOrSelectedFile
+    private func isFinderItemSelected() -> Bool {
+        let finder = SBApplication(bundleIdentifier: Constants.Finder.id)! as FinderApplication
         
-        return url.absoluteString
+        guard let selection = finder.selection,
+            let selectionItems = selection.get() else {
+            return false
+        }
+        return (selectionItems as! Array<AnyObject>).count != 0
     }
     
     /// Determine if the app exists in the `/Applications` folder
